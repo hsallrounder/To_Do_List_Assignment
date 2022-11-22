@@ -6,12 +6,12 @@ const storeTheme = function (theme) {
     localStorage.setItem('theme', theme);
 }
 
-const applyTheme=function(){
-    const activeTheme=localStorage.getItem('theme');
+const applyTheme = function () {
+    const activeTheme = localStorage.getItem('theme');
 
     themeColors.forEach((themeOption) => {
-        if(activeTheme==themeOption.id){
-            themeOption.checked=true;
+        if (activeTheme == themeOption.id) {
+            themeOption.checked = true;
         }
     })
 }
@@ -22,73 +22,62 @@ themeColors.forEach((themeOption) => {
     })
 })
 
-document.onload=applyTheme();
+document.onload = applyTheme();
 
-// add items
 
-var form=document.getElementById('addForm');
-var itemList=document.getElementById('items');
-form.addEventListener('submit',addEvent);
-function addEvent(e) {
+var form = document.getElementById('addForm');
+var itemList = document.getElementById('items');
+
+// Add Data 
+
+form.addEventListener('submit', addData);
+function addData(e) {
     e.preventDefault();
+    var text = document.getElementById('main-input').value;
 
-    var item=document.getElementById('main-input').value;
-    
-    var newItem=document.createElement('li');
-    newItem.className="list-group-item";
-    newItem.appendChild(document.createTextNode(item));
+    var newItem = document.createElement('li');
+    newItem.className = "list-group-item";
+    newItem.appendChild(document.createTextNode(text));
 
-    var dltButton=document.createElement('button');
-    dltButton.className="btn btn-danger btn-sm float-right delete";
+    var dltButton = document.createElement('button');
+
+    dltButton.className = "btn btn-danger btn-sm float-right delete";
     dltButton.appendChild(document.createTextNode('X'));
 
     newItem.appendChild(dltButton);
 
     itemList.appendChild(newItem);
+    
 }
 
-// remove items
+// Remove Data 
 
-itemList.addEventListener('click',removeEvent);
+itemList.addEventListener('click', removeEvent);
 
 function removeEvent(e) {
-    if(e.target.classList.contains('delete')){
-        if(confirm('delete kr rhe ho?')){
-            var li=e.target.parentElement;
+    if (e.target.classList.contains('delete')) {
+        if (confirm('delete kr rhe ho?')) {
+            var li = e.target.parentElement;
             itemList.removeChild(li);
         }
     }
 }
 
-// Add ItemList to Local Storage
+// Search Filter
 
-const submitBtn = document.getElementById('submit-btn');
-submitBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    var text = document.getElementById('item').value;
-    var arr = JSON.parse(localStorage.getItem('itemList'));
-    if(!arr) {
-        arr = new Array();
-        arr.push([text,0]);
+filter = document.getElementById("filter");
+filter.addEventListener("input", (event) => {
+    f = filter.value;
+    f = f.toUpperCase();
+    li = document.querySelectorAll(".list-group-item");
+    for (i = 0; i < li.length; i++) {
+        if (li[i].innerHTML.toUpperCase().indexOf(f) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
     }
-    else arr.push([text,arr.length]);
-    localStorage.setItem('itemList',JSON.stringify(arr));
-    loadItemList();
-})
+});
 
-function loadItemList() {
-    let itemList = JSON.parse(localStorage.getItem('itemList'));
-    document.getElementById('items').innerHTML = ``;
-    itemList.forEach((newTaskContent) => {
-        var newItem = document.createElement('li');
-        newItem.textContent = newTaskContent[0];
-        newItem.classList.add("list-group-item");
-        var btn = document.createElement('button');
-        btn.textContent = "X";
-        btn.className = "btn btn-danger btn-sm float-right delete delete-btn";
-        btn.id = newTaskContent[1];
-        newItem.appendChild(btn);
-        document.getElementById('items').appendChild(newItem);
-    })
-}
-document.onload = loadItemList()
+
+
